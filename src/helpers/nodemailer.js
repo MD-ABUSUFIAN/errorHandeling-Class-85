@@ -11,12 +11,12 @@ const transporter = nodemailer.createTransport({
     pass:process.env.APP_PASSWORD, // generated ethereal password
   },
 });
-exports.mailer=async(template,email)=>{
+exports.mailer=async(subject="Confirm Registration  ✔",template,email)=>{
     try {
         const info = await transporter.sendMail({
     from: '"chamok it solutaion" <ch@mok@IT.email>',
     to: email,
-    subject: "  Confirmed Registration ✔",
+    subject: subject,
     html: template // HTML body
     })}
     catch (error) {
