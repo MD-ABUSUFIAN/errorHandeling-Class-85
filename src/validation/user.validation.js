@@ -6,7 +6,7 @@ const userValidationSchema = Joi.object({
     .min(5)
     .max(20)
     // .pattern(/^[a-zA-Z\s]+$/)
-    .required()
+    // .required()
   .messages({
   'string.base': 'Name must be in text format',
   'string.empty': 'Name cannot be empty',
@@ -52,7 +52,7 @@ password: Joi.string()
 },{abortEarly: true}).unknown(true);
 
 
-const validateUser=async(req,res)=>{
+const validateUser=async(req)=>{
   try {
     const value=await userValidationSchema.validateAsync(req.body)
     return value

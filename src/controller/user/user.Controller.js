@@ -9,7 +9,7 @@ const { apiResponse } = require("../../utils/apiResponse")
 // const asyncHandeler=require('../../utils/asyncHandeler')
 exports.registration=asyncHandeler(async(req,res)=>{
 
-    const value=await validateUser(req,res)
+    const value=await validateUser(req)
     console.log(value)
     // now save the user data 
     const userData=await new userModel({
@@ -119,38 +119,76 @@ if(newPassword !==confirmPassword){
 
 })
 
+//login
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-exports.login=asyncHandeler((req,res)=>{
-    throw new Error("login faild")
+exports.login=asyncHandeler(async(req,res)=>{
+    const {email,password}=await validateUser(req)
+    const findUser=await userModel.findOne({email})
+    if(!findUser){
+    
+        throw new customError(401,"User Not Found")
+    }
+   
+    const isMatch= await findUser.comparePassword(password)
+    console.log(isMatch)
+    // return
+ 
+    if(!isMatch){
+        throw new customError(401,"password not match")
+    }
+    // genarate access token access token and refresh token 
+    const accessToken=await findUser.acessTokenGenerate()
+    const refreshToken=await findUser.refreshTokenGenarate()
+    // send refresh token into cookies 
+    res.cookie("refreshToken",refreshToken,{
+        httpOnly:true,
+        secure:true,
+        sameSite:"none",
+        path:"/",
+        maxAge:15*24*60*1000
+    })
+    // set refresh token into database 
+    findUser.refreshToken=refreshToken;
+    await findUser.save()
+    apiResponse.sendSucess(res,200,"login Successfully",{
+        data:{
+            name:findUser.name,
+            accessToken:accessToken
+        }
+    })
+    
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // exports.registration=async(req,res)=>{
 //     try {

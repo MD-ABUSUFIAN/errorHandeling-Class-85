@@ -93,9 +93,10 @@ userSchema.pre('save',async function(next){
     if(this.isModified('password')){
     //   const saltRounds = 10;
     //   const planPassword=this.password;
-       const hashPassword=await bcrypt.hash(this.password,10);
-       this.password=hashPassword
+       this.password=await bcrypt.hash(this.password,10);
+   
     }
+    next()
 })
 
 // check user email and phone number already exist 
@@ -110,12 +111,13 @@ userSchema.pre('save',async function(next){
 })
 
 // compare the database encription password and human readable password 
-userSchema.method.comparePassword=async function(humanPassword){
-    await bcrypt.compare(humanPassword,this.password)
-}
+userSchema.methods.comparePassword = async function (humanPassword) {
+const result=await bcrypt.compare(humanPassword, this.password);
+return result
+};
 
 // acess token genarate method 
-userSchema.method.acessTokenGenerate=async function(){
+userSchema.methods.acessTokenGenerate=async function(){
 return await jwt.sign({
   id:this._id,
   email:this.email,
@@ -126,18 +128,18 @@ return await jwt.sign({
 }
 //  refresh token genarate method 
 
-userSchema.method.refreshTokenGenarate=async function(){
+userSchema.methods.refreshTokenGenarate=async function(){
    return await jwt.sign({
     id:this._id,
 }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
 }
 
 // varify access token method 
-userSchema.method.varifyAcessToken=async function(token){
+userSchema.methods.varifyAcessToken=async function(token){
     return await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 }
 // varify access token method 
-userSchema.method.varifyRefreshToken=async function(token){
+userSchema.methods.varifyRefreshToken=async function(token){
     return await jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
 }
 
