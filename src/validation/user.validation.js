@@ -55,6 +55,7 @@ password: Joi.string()
 const validateUser=async(req)=>{
   try {
     const value=await userValidationSchema.validateAsync(req.body)
+    // console.log(value)
     return value
     
   } catch (error) {

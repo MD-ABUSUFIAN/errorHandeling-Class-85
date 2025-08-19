@@ -9,5 +9,7 @@ _.route('/resendOtp').post(userController.resendOtp)
 _.route('/forgetPassword').post(userController.forgetPassword)
 _.route('/resetPassword').post(userController.resetPassword)
 _.route('/login').post(userController.login)
+_.route('/logout').post(userController.logOut)
+// _.route('/getme').post(userController.getMe)
 
 module.exports=_;

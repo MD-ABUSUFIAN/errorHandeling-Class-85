@@ -102,8 +102,6 @@ userSchema.pre('save',async function(next){
 // check user email and phone number already exist 
 userSchema.pre('save',async function(next){
     const isExist=await this.constructor.findOne({email:this.email})
-    console.log(isExist)
-
     if(isExist && isExist._id !== this._id && isExist._id==this._id){
         throw new customError(401,'Email or Phone number already exists');
     }
