@@ -3,4 +3,5 @@ const _=express.Router();
 
 
 _.use('/auth',require('./api/user.api'))
-module.exports=_
+_.use('/category',require('./api/category.api'))
+module.exports=_;
