@@ -4,6 +4,7 @@ const categoryModel = require("../models/category.Model");
 const { apiResponse } = require("../utils/apiResponse");
 const { asyncHandeler } = require("../utils/asyncHandeler");
 const { validateCategory } = require("../validation/category.validation");
+const { customError } = require("../helpers/customError");
 
 
 exports.createCategory=asyncHandeler(async(req,res)=>{
@@ -75,3 +76,33 @@ exports.updateCategory=asyncHandeler(async(req,res)=>{
    await updateData.save()
    apiResponse.sendSucess(res,200,"Category Update Successfully",updateData)   
 })
+
+// delete category
+exports.deleteCategory=asyncHandeler(async(req,res)=>{
+    const {slug}=req.params;
+    if(!slug){
+        throw new customError(401,"slug not found")
+    }
+    const deleteCategory=await categoryModel.findOneAndDelete({slug:slug})
+    if(!deleteCategory){
+        throw new customError(401,"Category Not Found")
+    }
+    // delete image from cloudinary
+    const response=await deleteCloudinaryFile(deleteCategory?.image?.publicId)
+    console.log(response)
+    apiResponse.sendSucess(res,200,"Category Delete Successfully",deleteCategory)   
+})
+
+// active category 
+exports.activeCategory=asyncHandeler(async(req,res)=>{
+    const {active}=req.query;
+    if(!active){
+        throw new customError(401,"active not input")
+    }
+    const findCategory=await categoryModel.find({isActive:active})
+    if(!findCategory){
+        throw new customError(401,"Category Not Found")
+    }
+    apiResponse.sendSucess(res,200,"Active Category Find Successfully",findCategory)
+})
+   

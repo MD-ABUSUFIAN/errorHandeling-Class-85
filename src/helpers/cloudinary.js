@@ -38,9 +38,9 @@ exports.deleteCloudinaryFile=async(publicId)=>{
             throw new customError(401,"publicId is missing")
         }
        const response= await cloudinary.uploader.destroy(publicId);
-    //    if(response?.result!=='ok'){
-    //     throw new customError(400,"faild to delete image")
-    //    }
+       if(response?.result!=='ok'){
+        throw new customError(400,"faild to delete image")
+       }
        return response;
     } catch (error) {
         throw new customError(500,"faild to delete image"+ error.message)

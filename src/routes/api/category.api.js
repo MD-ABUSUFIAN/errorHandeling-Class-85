@@ -7,6 +7,8 @@ _.route('/create-category').post(upload.fields([{name:'image',maxCount:1}]),cate
 _.route('/allCategory').get(categoryController.getAllCategory)
 _.route('/getSingleCategory/:slug').get(categoryController.getSingleCategory)
 _.route('/updateCategory/:slug').put(upload.fields([{name:'image',maxCount:1}]),categoryController.updateCategory)
+_.route('/deleteCategory/:slug').delete(categoryController.deleteCategory)
+_.route('/activeCategory').get(categoryController.activeCategory)
 
 
 
