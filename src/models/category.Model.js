@@ -10,7 +10,7 @@ const categorySchema = new mongoose.Schema(
       trim: true,
     },
 
-    image: { type: String, default: "" },
+    image:{},
 
     slug: {
       type: String,
@@ -46,4 +46,4 @@ categorySchema.pre("save", async function (next) {
 });
 
 module.exports =
-  mongoose.models.category || mongoose.model("category", categorySchema);
+  mongoose.models.Category || mongoose.model("Category", categorySchema);

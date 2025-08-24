@@ -29,14 +29,14 @@ exports.validateCategory = async (req) => {
   if(image.length>1){
     throw new customError(401,"Image must be single")
   }
-  if(image.size>20000){
+  if(image.size>5*1024*1024){
  throw new customError(401,"Image MAX size 2MB")
   }
   if(!allowFormat.includes(image?.mimetype)){
     throw new customError(401,"Image format not Accepted try image/jpg,png")
   }
     // sanitize image 
-    return value;
+    return {name:value.name,image:req?.files?.image[0]};
   } catch (error) {
     if(error.data==null){
         throw new customError(401,error)
