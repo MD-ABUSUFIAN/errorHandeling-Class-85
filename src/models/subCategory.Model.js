@@ -58,6 +58,13 @@ subCategorySchema.pre("save", async function (next) {
   next();
 });
 
+function autoPopulate(next) {
+  this.populate({path:"category"})
+  next()
+}
+
+subCategorySchema.pre("find", autoPopulate);
+
 module.exports =
   mongoose.models.SubCategory ||
   mongoose.model("SubCategory", subCategorySchema);
