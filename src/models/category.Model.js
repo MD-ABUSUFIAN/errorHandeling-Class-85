@@ -16,6 +16,11 @@ const categorySchema = new mongoose.Schema(
       type: String,
       unique: true, // ✅ enforce unique at DB level
     },
+    subCategory:[
+{type:mongoose.Types.ObjectId,
+  ref:"SubCategory"
+}
+    ],
 
     isActive: { type: Boolean, default: true },
   },

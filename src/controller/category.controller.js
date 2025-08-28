@@ -27,7 +27,44 @@ exports.createCategory=asyncHandeler(async(req,res)=>{
 
 // get all category
 exports.getAllCategory=asyncHandeler(async(req,res)=>{
-    const allCategory=await categoryModel.find().sort({createdAt:-1});
+    // const allCategory=await categoryModel.find({}).populate({
+    //     path:"subCategory",
+    //     select:"-category -updatedAt"
+    // }).sort({createdAt:-1});
+
+    const allCategory=await categoryModel.aggregate([
+        {
+            $lookup:{
+                from:"subcategories",  
+                localField:"SubCategory",
+                foreignField:"_id",
+                as:"subCategoryDetails"
+            },
+            
+                $project:{
+                    name:1,
+                    image:1,
+                    slug:1,
+                    isActive:1,
+                    createdAt:1,
+                    subCategoryDetails:1
+                }
+            
+
+            
+            
+        }
+        // {
+        //     $project:{
+        //         "subCategory.category":0,
+        //         "subCategory.updatedAt":0,
+        //         "subCategory.__v":0
+        //     }
+        // },
+        // {
+        //     $sort:{createdAt:-1}
+        // }
+    ])
    if(!allCategory){
     throw new customError(401,"Catagory Not Found")
    }
