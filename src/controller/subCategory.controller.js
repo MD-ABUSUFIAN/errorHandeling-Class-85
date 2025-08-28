@@ -180,10 +180,43 @@ exports.updateSubCategory = asyncHandeler(async (req, res) => {
     // push into new category
     await categoryModel.findByIdAndUpdate(value.category, {
       $push: { subCategory: subcategory._id },
-    });
+    }, { new: true });
   }
 
   await subcategory.save();
+
+  apiResponse.sendSucess(res, 200, "Sub Category updated successfully", subcategory);
+});
+
+// delete sub category 
+exports.deleteSubCategory = asyncHandeler(async (req, res) => {
+  const { slug } = req.params;
+  if (!slug) {
+    throw new customError(400, "Slug not found");
+  }
+
+  const value = await validateSubCategory(req);
+
+  const subcategory = await subCategoryModel.findOne({ slug });
+  if (!subcategory) {
+    throw new customError(404, "Sub Category Not Found");
+  }
+ await categoryModel.findByIdAndUpdate({_id:subcategory.category}, {
+      $pull: { subCategory: subcategory._id },
+    }, { new: true });
+
+
+  // If category changed → remove from old one and add to new one
+  if (value.category && value.category.toString() !== subcategory.category.toString()) {
+    // remove from old category
+    await categoryModel.findByIdAndUpdate(subcategory.category, {
+      $pull: { subCategory: subcategory._id },
+    });
+
+   
+  }
+
+  await subcategory.deleteOne({_id:subcategory._id});
 
   apiResponse.sendSucess(res, 200, "Sub Category updated successfully", subcategory);
 });

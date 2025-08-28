@@ -8,4 +8,5 @@ _.route('/createSubCategory').post(subCategoryController.createSubCategory
 _.route('/getAllSubCategory/:slug').get(subCategoryController.getAllSubCategory)
 _.route('/singleGetSubCategory/:slug').get(subCategoryController.singleGetSubCategory)
 _.route('/updateSubCategory/:slug').put(subCategoryController.updateSubCategory)
+_.route('/deleteSubCategory/:slug').delete(subCategoryController.deleteSubCategory)
 module.exports=_;
