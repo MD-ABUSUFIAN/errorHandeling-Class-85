@@ -9,6 +9,8 @@ const upload=require('../../middleware/multer.middleware')
 _.route('/createbrand').post(upload.fields([{name:'image',maxCount:1}]),brandController.createBrand)
 _.route('/getAllBrand').get(brandController.getAllBrand)
 _.route('/getSingleBrand/:slug').get(brandController.getsingleBrand)
+_.route('/updateBrand/:slug').patch(upload.fields([{name:'image',maxCount:1}]),brandController.updateBrand)
+_.route('/deleteBrand/:slug').delete(brandController.deleteBrand)
 
 
 

@@ -46,10 +46,10 @@ exports.validateBrand = async (req) => {
     }
 
     // ✅ sanitize image 
-    return { name: value.name, image };
+    return { name: value.name, image:image };
   } catch (error) {
     if (!error.details) {
-      throw new customError(401, error.message || error);
+      throw new customError(401,"error from validation"+ error.message || error);
     }
 
     throw new customError(

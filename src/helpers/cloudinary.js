@@ -43,6 +43,8 @@ exports.deleteCloudinaryFile=async(publicId)=>{
        }
        return response;
     } catch (error) {
+   
+
         throw new customError(500,"faild to delete image"+ error.message)
     }
 }

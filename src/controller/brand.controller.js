@@ -1,4 +1,4 @@
-const { uploadCloudinaryFile } = require("../helpers/cloudinary");
+const { uploadCloudinaryFile, deleteCloudinaryFile } = require("../helpers/cloudinary");
 const { asyncHandeler } = require("../utils/asyncHandeler");
 const { validateBrand } = require("../validation/brand.validation");
 const brandModel = require("../models/brand.Model");
@@ -59,4 +59,66 @@ exports.getAllBrand=asyncHandeler(async(req,res)=>{
        apiResponse.sendSucess(
         res,200,"single brand get sucessfully",findBrand
     )
+    })
+
+
+    // update brand 
+    exports.updateBrand=asyncHandeler(async(req,res)=>{
+        const {slug}=req.params;
+        if(!slug){
+            throw new customError(404,"no brand found")
+        }
+        const value=await validateBrand(req)
+        const findBrand=await brandModel.findOne({slug:slug})
+      
+        // console.log(req?.files?.image[0].path);
+        if(!findBrand){
+            throw new customError(404,"no brand found")
+           }
+    
+        //    delete image for cloudinary 
+        if(req?.files?.image ){
+      
+             await deleteCloudinaryFile(findBrand?.image?.publicId)
+             
+        //    update cloudinary for new image 
+                const imageAssset=await uploadCloudinaryFile(req?.files?.image[0]?.path)
+                findBrand.image=imageAssset
+            // const imageAseet=await uploadCloudinaryFile(req?.files?.image[0]?.path)
+            // findBrand.image=imageAseet;
+        }
+              // update brand info
+              findBrand.name=value.name || findBrand.name;
+              await findBrand.save();
+apiResponse.sendSucess(
+    res,200,"brand update sucessfully",findBrand
+)
+ console.log("this is hit");
+    })
+
+    // delete brand 
+    exports.deleteBrand=asyncHandeler(async(req,res)=>{
+        const {slug}=req.params;
+        if(!slug){
+            throw new customError(404,"no brand found")
+        }
+        const findData=await brandModel.findOneAndDelete({slug:slug})
+        console.log(findData);
+       
+        if(!findData){
+            throw new customError(404,"no brand found")
+           }
+              // delete image for cloudinary
+                await deleteCloudinaryFile(findData?.image?.publicId)        
+               
+ const brandDelete=await brandModel.findOneAndDelete({slug:slug});
+ console.log(brandDelete);
+ if(!brandDelete){
+    throw new customError(500,"faild to delete brand")
+ }
+ apiResponse.sendSucess(
+    res,200,"brand delete sucessfully",findData
+)
+                
+    
     })
