@@ -1,10 +1,20 @@
 const globalErrorHandeler=require("./src/helpers/globalErrorHandeler")
+require("dotenv").config()
 const express=require("express");
 const cors=require("cors")
+const morgan=require("morgan")
 // const { trusted } = require("mongoose");
 const cookieParser = require('cookie-parser')
 const app=express()
-//all global middleWare 
+
+
+//all global middleWare
+if(process.env.NODE_ENV==="development"){
+    app.use(morgan("dev"))
+}else{
+    app.use(morgan("short"))
+}
+
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
