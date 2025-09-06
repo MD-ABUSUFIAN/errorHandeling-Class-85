@@ -8,12 +8,12 @@ const productValidationSchema = Joi.object(
       "string.base": "Name must be text",
     }),
 
-    purchasePrice: Joi.number().required().messages({
+    purchasePrice: Joi.number().messages({
       "any.required": "Purchase price is required",
       "number.base": "Purchase price must be a number",
     }),
 
-    retailPrice: Joi.number().required().messages({
+    retailPrice: Joi.number().messages({
       "any.required": "Retail price is required",
       "number.base": "Retail price must be a number",
     }),

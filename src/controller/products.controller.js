@@ -1,4 +1,4 @@
-const { uploadCloudinaryFile } = require('../helpers/cloudinary');
+const { uploadCloudinaryFile, deleteCloudinaryFile } = require('../helpers/cloudinary');
 require('dotenv').config();
 const { customError } = require('../helpers/customError');
 const { generateQRCode, generateBarCode } = require('../helpers/qrCode');
@@ -40,7 +40,7 @@ exports.createProducts = asyncHandeler(async (req, res) => {
   //    now update product with qr code and bar code
   product.qrCode = qrcode;
   product.barCode = barcode;
-  if( !data.retailPrice|| !data.purchasePrice || !data.wholeSalePrice || !data.color){
+  if( !data.retailPrice && !data.purchasePrice && !data.wholeSalePrice && !data.color){
     product.variantType = 'multiple'
   }
   else{
@@ -52,3 +52,60 @@ exports.createProducts = asyncHandeler(async (req, res) => {
 
   apiResponse.sendSucess(res, 200, 'Product created sucessfully', product);
 });
+
+
+
+// get all data with pagination
+exports.getAllProducts = asyncHandeler(async (req, res) => {
+  const findProducts=await productsModel.find().populate({path:'category',select:'-subCategory -createdAt -updatedAt -__v'}).populate({path:"-subCategory"}).populate({path:"brand"})
+  if(!findProducts) throw new customError('No products found',404)
+  apiResponse.sendSucess(res,200,'All products data',findProducts)
+console.log(findData)
+
+})
+
+
+//  get a single product 
+exports.getSingleProduct=asyncHandeler(async(req,res)=>{
+  const {slug}=req.params;
+  if(!slug) throw new customError(401,"slug not found");
+  const singleProduct=await productsModel.findOne({slug:slug}).populate({path:'category',select:'-subCategory -createdAt -updatedAt -__v'}).populate({path:"-subCategory"}).populate({path:"brand"})
+  if(!singleProduct)throw new customError(401,"single product not found")
+  console.log(singleProduct)
+apiResponse.sendSucess(res,201,"single data find out successfully",singleProduct)
+})
+
+// update a products information
+
+exports.updateProduct=asyncHandeler(async(req,res)=>{
+  const {slug}=req.params;
+  console.log (req.body)
+  if(!slug) throw new customError(404,"product slug not found")
+    const product=await productsModel.findOneAndUpdate({slug:slug},req.body,{new:true})
+  if(!product) throw new customError(404,"product not found")
+apiResponse.sendSucess(res,201,"product fetch successfully done",product)
+})
+
+
+// update product image 
+exports.updateProductImage=asyncHandeler(async(req,res)=>{
+  const {slug}=req.params;
+
+  if(!slug) throw new customError(404,"product slug not found")
+    const product=await productsModel.findOne({slug:slug})
+
+for(const imageId of req.body.imageId){
+await deleteCloudinaryFile(imageId)
+product.image=product.image.filter((img)=>img.publicId!==imageId)
+}
+// upload image for cloudinary
+
+for(const image of req.files.image){
+  const imageInfo= await uploadCloudinaryFile(image.path)
+  product.image.push(imageInfo)
+}
+await product.save()
+
+  
+apiResponse.sendSucess(res,201,"product fetch successfully done",product)
+})
