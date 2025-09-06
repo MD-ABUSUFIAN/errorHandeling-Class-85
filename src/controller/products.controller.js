@@ -109,3 +109,41 @@ await product.save()
   
 apiResponse.sendSucess(res,201,"product fetch successfully done",product)
 })
+
+
+// get product by category id sub category id and brand id 
+
+exports.getProduct=asyncHandeler(async(req,res)=>{
+  const {category,subCategory,brand}=req.query;
+  let query;
+  if(category){query={...query,category:category}}
+  if(subCategory){query={...query,subCategory:subCategory}}
+  if(brand){query={...query,brand:brand}}
+
+  // if(name){query={name:{$regex:name,$options:"i"}}}
+ const product=await productsModel.find(query);
+ if(!product){
+  throw new customError(404,"no product found")
+ }
+ apiResponse.sendSucess(res,200,"Products felter successfully",product)
+})
+
+
+// get product by price filter 
+
+exports.priceFilterProduct=asyncHandeler(async(req,res)=>{
+const {minPrice,maxPrice}=req.query;
+if(!minPrice || !maxPrice){
+  throw new customError(404,"Min and Max price are required")
+}
+const product=await productsModel.find({
+  $and:[
+         {retailPrice:{$gte:minPrice,$lte:maxPrice}}
+  ]
+})
+
+if(!product){
+  throw new customError(404,"no products found")
+}
+apiResponse.sendSucess(res,200,"products fetch successfully",product)
+})
