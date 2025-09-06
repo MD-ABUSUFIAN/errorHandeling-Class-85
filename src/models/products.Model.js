@@ -20,6 +20,7 @@ const productSchema = new mongoose.Schema(
     slug: { type: String, unique: true },
     description: { type: String, trim: true },
     barCode: { type: String, trim: true },
+    qrCode: { type: String, trim: true },
 
     groupUnit: {
       type: String,
@@ -39,8 +40,8 @@ const productSchema = new mongoose.Schema(
     reviews: [reviewSchema],
 
     sku: { type: String, trim: true, unique: true },
-    purchasePrice: { type: Number, required: true },
-    retailPrice: { type: Number, required: true },
+    purchasePrice: { type: Number },
+    retailPrice: { type: Number},
     wholeSalePrice: { type: Number },
     minimumWholeSaleOrderQuantity: { type: Number, min: 100 },
     minimumuomrde: { type: Number },
@@ -58,7 +59,10 @@ const productSchema = new mongoose.Schema(
     manufactureCountry: { type: String },
 
     rating: { type: Number, max: 5, default: 0 },
+    variantType: { type: String, enum: ["multiple", "single", ]},
   },
+    // createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  
   { timestamps: true }
 );
 
