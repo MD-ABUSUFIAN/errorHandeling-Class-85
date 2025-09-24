@@ -8,4 +8,5 @@ _.use('/subcategory',require('./api/subcategory.api'))
 _.use('/brand',require('./api/brand.api'))
 _.use('/discount',require('./api/discount.api'))
 _.use('/products',require('./api/products.api'))
+_.use('/varient',require('./api/varient.api'))
 module.exports=_;

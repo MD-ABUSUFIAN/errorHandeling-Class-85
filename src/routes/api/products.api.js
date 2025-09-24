@@ -11,6 +11,7 @@ _.route('/updateProductImage/:slug').put(upload.fields([{name:'image',maxCount:5
 
 _.route("/searchProduct").get(productsController.getProduct)
 _.route("/priceFilter").get(productsController.priceFilterProduct)
+_.route("/productPagination").get(productsController.productPagination)
 
 
 module.exports=_;
