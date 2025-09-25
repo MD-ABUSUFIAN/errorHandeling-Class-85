@@ -28,7 +28,7 @@ const variantSchema = new mongoose.Schema(
     qrCode: { type: String, trim: true },
 
     size: { type: String, trim: true,required:true },
-    color: { type: String, trim: true,required:true },
+    color: [{ type: String, trim: true,required:true }],
 
     stockVariant: { type: Number, default: 0, required: true },
 
