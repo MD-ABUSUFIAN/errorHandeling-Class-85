@@ -75,7 +75,36 @@ exports.uploadVarientImage=asyncHandeler(async(req,res)=>{
         exports.updateVarient=asyncHandeler(async(req,res)=>{
             const {slug}=req.params;
             const data=await validateVariant(req);
-            const varient=await varientModel.findOneAndUpdate({slug},data,{new:true})
-            if(!varient){
+            const existingVariant=await varientModel.findOne({slug})
+            if(!existingVariant){
                 throw new customError(401,"varient not found")
-            }})
+                // check if product is changed 
+            }
+            const productChange=data.product && data.product.toString()!==existingVariant.product.toString()
+
+            
+            // update varient information
+            const updateVarient=await varientModel.findOneAndUpdate({slug},{...data},{new:true})
+            if(!updateVarient){
+                throw new customError(401,"faild to update varient")
+            }
+            if(productChange){
+                // remove varient from old product
+                await productModel.findOneAndUpdate(existingVariant.product,{$pull:{varients:existingVariant._id}},{new:true})
+                // add varient to new product
+                await productModel.findOneAndUpdate(updateVarient.product,{$push:{varients:updateVarient._id}},{new:true})
+            }
+            apiResponse.sendSucess(res,200,"varient updated successfully",updateVarient)
+        })
+
+        // varient delete 
+        exports.deleteVarient=asyncHandeler(async(req,res)=>{
+            const {slug}=req.params;
+            const varient=await varientModel.findOneAndDelete({slug})
+            if(!varient){
+                throw new customError(401,"faild to delete varient")
+            }
+            // remove varient from product
+            await productModel.findOneAndUpdate({_id:varient.product},{$pull:{varients:varient._id}},{new:true})
+            apiResponse.sendSucess(res,200,"varient deleted successfully",varient)
+        })
