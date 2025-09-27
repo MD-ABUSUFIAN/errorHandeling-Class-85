@@ -1,14 +1,20 @@
-const mongoose = require("mongoose");
-const slugify = require("slugify");
-const { customError } = require("../helpers/customError");
+const mongoose = require('mongoose');
+const slugify = require('slugify');
+const { customError } = require('../helpers/customError');
 
 // ✅ Define reviewSchema separately
 const reviewSchema = new mongoose.Schema(
   {
-    reviewerid: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    reviewerid: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+
     comment: { type: String, trim: true, maxlength: 500 },
     rating: { type: Number, required: true, min: 0, max: 5 },
-    image: { type: String, trim: true },
+    image: [{}],
+    productId: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Product',
+      required: true,
+    },
   },
   { timestamps: true }
 );
@@ -24,24 +30,27 @@ const productSchema = new mongoose.Schema(
 
     groupUnit: {
       type: String,
-      enum: ["Box", "Packet", "Dozen", "Custom"],
+      enum: ['Box', 'Packet', 'Dozen', 'Custom'],
     },
     groupUnitQuantity: { type: Number, default: 1 },
     unit: {
       type: String,
-      enum: ["Piece", "Kg", "Gram", "Packet", "Liter"],
+      enum: ['Piece', 'Kg', 'Gram', 'Packet', 'Liter'],
     },
 
     size: [{ type: String }],
     color: [{ type: String }],
     totalStock: { type: Number, default: 0 },
-    warehouseLocation: { type: mongoose.Schema.Types.ObjectId, ref: "Warehouse" },
+    warehouseLocation: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Warehouse',
+    },
 
     reviews: [reviewSchema],
 
     sku: { type: String, trim: true, unique: true },
     purchasePrice: { type: Number },
-    retailPrice: { type: Number},
+    retailPrice: { type: Number },
     wholeSalePrice: { type: Number },
     minimumWholeSaleOrderQuantity: { type: Number, min: 100 },
     minimumuomrde: { type: Number },
@@ -49,31 +58,31 @@ const productSchema = new mongoose.Schema(
     instock: { type: Boolean, default: true },
     isActive: { type: Boolean, default: true },
 
-    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
-    subCategory: { type: mongoose.Schema.Types.ObjectId, ref: "SubCategory" },
-    brand: { type: mongoose.Schema.Types.ObjectId, ref: "Brand" },
-    discount: { type: mongoose.Schema.Types.ObjectId, ref: "Discount" },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+    subCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'SubCategory' },
+    brand: { type: mongoose.Schema.Types.ObjectId, ref: 'Brand' },
+    discount: { type: mongoose.Schema.Types.ObjectId, ref: 'Discount' },
 
     image: [], // Consider changing this to an array of file paths
     tag: [{ type: String }],
     manufactureCountry: { type: String },
 
     rating: { type: Number, max: 5, default: 0 },
-    variantType: { type: String, enum: ["multiple", "single", ]},
+    variantType: { type: String, enum: ['multiple', 'single'] },
   },
-    // createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  
+  // createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+
   { timestamps: true }
 );
 
 // ✅ Add slug before saving
-productSchema.pre("save", async function (next) {
-  if (this.isModified("name")) {
+productSchema.pre('save', async function (next) {
+  if (this.isModified('name')) {
     this.slug = slugify(this.name, {
-      replacement: "-",
+      replacement: '-',
       lower: true,
       strict: false,
-      locale: "vi",
+      locale: 'vi',
       trim: true,
     });
   }
@@ -81,7 +90,7 @@ productSchema.pre("save", async function (next) {
 });
 
 // ✅ Check duplicate slug manually
-productSchema.pre("save", async function (next) {
+productSchema.pre('save', async function (next) {
   const isExist = await this.constructor.findOne({ slug: this.slug });
   if (isExist && !isExist._id.equals(this._id)) {
     throw new customError(
@@ -92,4 +101,5 @@ productSchema.pre("save", async function (next) {
   next();
 });
 
-module.exports = mongoose.models.Product || mongoose.model("Product", productSchema);
+module.exports =
+  mongoose.models.Product || mongoose.model('Product', productSchema);
