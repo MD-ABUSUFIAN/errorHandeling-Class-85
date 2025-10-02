@@ -11,4 +11,5 @@ _.use('/products',require('./api/products.api'))
 _.use('/varient',require('./api/varient.api'))
 _.use('/review',require('./api/customerReview.api'))
 _.use('/cupon',require('./api/cupon.api'))
+_.use('/cart',require('./api/cart.api'))
 module.exports=_;
